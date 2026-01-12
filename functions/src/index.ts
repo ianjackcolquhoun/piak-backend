@@ -11,6 +11,8 @@ import {setGlobalOptions} from "firebase-functions";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";
 import {ClaudeService} from "./services/claude";
+import {INTENT_CLASSIFICATION_PROMPT} from "./prompts/intentClassification";
+import {ClassifyIntentResponse} from "./types";
 
 const anthropicApiKey = defineSecret("ANTHROPIC_API_KEY");
 
@@ -70,6 +72,67 @@ export const testClaude = onCall(
       // Log for debugging
       console.error("Claude API error:", error);
       throw new HttpsError("internal", "Claude API call failed");
+    }
+  }
+);
+
+/**
+ * Classifies user intent for contact operations.
+ * Routes input to add, update, or search actions.
+ */
+export const classifyIntent = onCall(
+  {
+    secrets: [anthropicApiKey],
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request): Promise<ClassifyIntentResponse> => {
+    // Require authentication
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Must be authenticated");
+    }
+
+    // Validate input
+    const text = request.data?.text;
+    if (!text || typeof text !== "string") {
+      throw new HttpsError("invalid-argument", "Text is required");
+    }
+
+    const claude = new ClaudeService(anthropicApiKey.value());
+
+    try {
+      const response = await claude.complete(
+        INTENT_CLASSIFICATION_PROMPT,
+        text,
+        256 // Short response for classification
+      );
+
+      // Parse JSON response
+      try {
+        const parsed = JSON.parse(response.text) as ClassifyIntentResponse;
+
+        // Validate response structure
+        if (!parsed.intent || !parsed.confidence) {
+          console.error("Invalid response structure:", response.text);
+          throw new HttpsError("internal", "Invalid response format");
+        }
+
+        return {
+          intent: parsed.intent,
+          confidence: parsed.confidence,
+          reasoning: parsed.reasoning,
+        };
+      } catch (parseError) {
+        console.error("JSON parse error:", response.text);
+        throw new HttpsError("internal", "Invalid response format");
+      }
+    } catch (error) {
+      // Re-throw HttpsErrors
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+      console.error("Claude API error:", error);
+      throw new HttpsError("internal", "Classification failed");
     }
   }
 );
