@@ -30,7 +30,7 @@ None
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Claude API service with Haiku 4.5
+- [x] 01-01: Claude API service with Haiku 4.5
 - [ ] 01-02: Contact data model and Firestore schema
 
 ### Phase 2: Intent Classification
@@ -79,7 +79,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/2 | Not started | - |
+| 1. Foundation | 1/2 | In progress | - |
 | 2. Intent Classification | 0/1 | Not started | - |
 | 3. Contact Extraction | 0/2 | Not started | - |
 | 4. Contact Operations | 0/2 | Not started | - |
