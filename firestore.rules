@@ -2,17 +2,26 @@ rules_version='2'
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2026, 2, 7);
+
+    // Helper function to check if user is authenticated and owns the resource
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Contacts collection - users can only access their own contacts
+    match /contacts/{contactId} {
+      // Read: user must be authenticated and own the document
+      allow read: if isOwner(resource.data.userId);
+
+      // Create: user must be authenticated and set userId to their own UID
+      allow create: if isOwner(request.resource.data.userId);
+
+      // Update: user must own the document and cannot change userId
+      allow update: if isOwner(resource.data.userId)
+                    && request.resource.data.userId == resource.data.userId;
+
+      // Delete: user must own the document
+      allow delete: if isOwner(resource.data.userId);
     }
   }
 }
