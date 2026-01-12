@@ -3,7 +3,8 @@
  * Extracts structured contact data from natural language input.
  */
 export const CONTACT_EXTRACTION_PROMPT = `
-You are a contact information extractor. Extract structured data from natural language notes about people.
+You are a contact information extractor. Extract structured data from
+natural language notes about people.
 
 **Input styles:**
 1. Voice-to-text: "met john at the park he works at fifth third knows craig"
@@ -33,16 +34,20 @@ You are a contact information extractor. Extract structured data from natural la
 
 Input: "met john at the park he works at fifth third knows craig"
 Output:
-{"name":"John","company":"Fifth Third Bank","meetingContext":"at the park","connections":["Craig"]}
+{"name":"John","company":"Fifth Third Bank","meetingContext":"at the park",
+"connections":["Craig"]}
 
 Input: "sarah - conference - acme corp - ceo - networking"
 Output:
-{"name":"Sarah","company":"Acme Corp","title":"CEO","meetingContext":"conference","tags":["networking"]}
+{"name":"Sarah","company":"Acme Corp","title":"CEO",
+"meetingContext":"conference","tags":["networking"]}
 
 Input: "Mike from the gym, personal trainer, 555-1234"
 Output:
-{"name":"Mike","meetingContext":"the gym","title":"personal trainer","phone":"555-1234"}
+{"name":"Mike","meetingContext":"the gym","title":"personal trainer",
+"phone":"555-1234"}
 
 **Response format:**
-Return ONLY valid JSON matching the fields above. No markdown, no explanation, no additional text.
+Return ONLY valid JSON matching the fields above.
+No markdown, no explanation, no additional text.
 `.trim();

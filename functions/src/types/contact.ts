@@ -95,3 +95,25 @@ export interface SearchContactInput {
  * This is what the AI returns, which gets stored in Contact.extracted.
  */
 export type ExtractionResult = ContactData;
+
+/**
+ * Input for the extractContact function.
+ */
+export interface ExtractContactInput {
+  /** The raw text to extract contact info from */
+  rawNote: string;
+}
+
+/**
+ * Response from the extractContact function.
+ */
+export interface ExtractContactResponse {
+  /** Extracted contact data */
+  extracted: ContactData;
+
+  /** Token usage for the API call */
+  usage: {
+    inputTokens: number;
+    outputTokens: number;
+  };
+}

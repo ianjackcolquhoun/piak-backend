@@ -12,7 +12,12 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";
 import {ClaudeService} from "./services/claude";
 import {INTENT_CLASSIFICATION_PROMPT} from "./prompts/intentClassification";
-import {ClassifyIntentResponse} from "./types";
+import {CONTACT_EXTRACTION_PROMPT} from "./prompts/contactExtraction";
+import {
+  ClassifyIntentResponse,
+  ExtractContactResponse,
+  ContactData,
+} from "./types";
 
 const anthropicApiKey = defineSecret("ANTHROPIC_API_KEY");
 
@@ -133,6 +138,63 @@ export const classifyIntent = onCall(
       }
       console.error("Claude API error:", error);
       throw new HttpsError("internal", "Classification failed");
+    }
+  }
+);
+
+/**
+ * Extracts structured contact data from natural language input.
+ * Core AI feature - parses voice-to-text or typed shorthand into ContactData.
+ */
+export const extractContact = onCall(
+  {
+    secrets: [anthropicApiKey],
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request): Promise<ExtractContactResponse> => {
+    // Require authentication
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Must be authenticated");
+    }
+
+    // Validate input
+    const rawNote = request.data?.rawNote;
+    if (!rawNote || typeof rawNote !== "string") {
+      throw new HttpsError("invalid-argument", "rawNote is required");
+    }
+
+    const claude = new ClaudeService(anthropicApiKey.value());
+
+    try {
+      const response = await claude.complete(
+        CONTACT_EXTRACTION_PROMPT,
+        rawNote,
+        512 // Extraction responses are longer than classification
+      );
+
+      // Parse JSON response
+      try {
+        const extracted = JSON.parse(response.text) as ContactData;
+
+        return {
+          extracted,
+          usage: {
+            inputTokens: response.inputTokens,
+            outputTokens: response.outputTokens,
+          },
+        };
+      } catch (parseError) {
+        console.error("JSON parse error:", response.text);
+        throw new HttpsError("internal", "Invalid response format");
+      }
+    } catch (error) {
+      // Re-throw HttpsErrors
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+      console.error("Claude API error:", error);
+      throw new HttpsError("internal", "Extraction failed");
     }
   }
 );
