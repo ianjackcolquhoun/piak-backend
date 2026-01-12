@@ -134,3 +134,31 @@ export interface UpdateContactResponse {
     outputTokens: number;
   };
 }
+
+/**
+ * A single search result match.
+ */
+export interface SearchMatch {
+  /** Contact ID that matched */
+  id: string;
+
+  /** Relevance score from 0.0 to 1.0 */
+  score: number;
+
+  /** Brief explanation of why this matched */
+  reason: string;
+}
+
+/**
+ * Response from the searchContacts function.
+ */
+export interface SearchContactResponse {
+  /** Array of matching contacts with scores */
+  results: SearchMatch[];
+
+  /** Token usage for the API call */
+  usage: {
+    inputTokens: number;
+    outputTokens: number;
+  };
+}
