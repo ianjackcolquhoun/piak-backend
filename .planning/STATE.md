@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-10)
 
 **Core value:** Accurate extraction. The AI must correctly parse casual, abbreviated natural language input into structured contact data.
-**Current focus:** Phase 4 — Contact Operations
+**Current focus:** Phase 5 — Security & Polish
 
 ## Current Position
 
-Phase: 4 of 5 (Contact Operations)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-01-12 — Completed 04-01-PLAN.md
+Phase: 4 of 5 (Contact Operations) - COMPLETE
+Plan: 2 of 2 in current phase
+Status: Phase complete
+Last activity: 2026-01-12 — Completed 04-02-PLAN.md
 
-Progress: ██████░░░░ 62%
+Progress: ████████░░ 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: 3 min
-- Total execution time: 0.23 hours
+- Total execution time: 0.30 hours
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: ██████░░░░ 62%
 | 1. Foundation | 2 | 9 min | 5 min |
 | 2. Intent Classification | 1 | 2 min | 2 min |
 | 3. Contact Extraction | 1 | 2 min | 2 min |
-| 4. Contact Operations | 1 | 1 min | 1 min |
+| 4. Contact Operations | 2 | 3 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (1 min), 02-01 (2 min), 03-01 (2 min), 04-01 (1 min)
+- Last 5 plans: 02-01 (2 min), 03-01 (2 min), 04-01 (1 min), 04-02 (2 min)
 - Trend: —
 
 ## Accumulated Context
@@ -56,6 +56,9 @@ Recent decisions affecting current work:
 - 04-01: Re-extraction only when rawNote actually changes
 - 04-01: Overrides applied after re-extraction (manual edits win)
 - 04-01: Firebase Admin initialized once at module level
+- 04-02: 512 maxTokens for search (results can include multiple matches)
+- 04-02: Return empty results when no contacts (skip API call)
+- 04-02: AI semantic matching - "coffee shop" matches "starbucks"
 
 ### Deferred Issues
 
@@ -68,5 +71,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-12
-Stopped at: Completed 04-01-PLAN.md
+Stopped at: Completed 04-02-PLAN.md (Phase 4 complete)
 Resume file: None
