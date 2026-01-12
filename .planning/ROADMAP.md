@@ -16,7 +16,7 @@ None
 
 - [x] **Phase 1: Foundation** - Claude API service and contact data model
 - [x] **Phase 2: Intent Classification** - Route user input to add/update/search
-- [ ] **Phase 3: Contact Extraction** - Parse natural language to structured data
+- [x] **Phase 3: Contact Extraction** - Parse natural language to structured data
 - [ ] **Phase 4: Contact Operations** - Update and search functions
 - [ ] **Phase 5: Security & Polish** - Firestore rules and prompt refinement
 
@@ -49,8 +49,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [x] 03-01: Contact extraction function and system prompts
-- [ ] 03-02: Handle both voice-to-text and typed shorthand input styles
+- [x] 03-01: Contact extraction function and system prompts (includes voice-to-text and typed shorthand handling)
 
 ### Phase 4: Contact Operations
 **Goal**: Implement contact update and search functions
@@ -81,6 +80,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-01-11 |
 | 2. Intent Classification | 1/1 | Complete | 2026-01-12 |
-| 3. Contact Extraction | 1/2 | In progress | - |
+| 3. Contact Extraction | 1/1 | Complete | 2026-01-12 |
 | 4. Contact Operations | 0/2 | Not started | - |
 | 5. Security & Polish | 0/2 | Not started | - |
