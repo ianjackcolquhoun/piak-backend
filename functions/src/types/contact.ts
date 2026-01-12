@@ -117,3 +117,20 @@ export interface ExtractContactResponse {
     outputTokens: number;
   };
 }
+
+/**
+ * Response from the updateContact function.
+ */
+export interface UpdateContactResponse {
+  /** The full updated contact */
+  contact: Contact;
+
+  /** Whether extraction was triggered (rawNote changed) */
+  reExtracted: boolean;
+
+  /** Token usage (only present if re-extraction occurred) */
+  usage?: {
+    inputTokens: number;
+    outputTokens: number;
+  };
+}
