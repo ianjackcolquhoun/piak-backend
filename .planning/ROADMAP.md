@@ -49,7 +49,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 03-01: Contact extraction function and system prompts
+- [x] 03-01: Contact extraction function and system prompts
 - [ ] 03-02: Handle both voice-to-text and typed shorthand input styles
 
 ### Phase 4: Contact Operations
@@ -81,6 +81,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-01-11 |
 | 2. Intent Classification | 1/1 | Complete | 2026-01-12 |
-| 3. Contact Extraction | 0/2 | Not started | - |
+| 3. Contact Extraction | 1/2 | In progress | - |
 | 4. Contact Operations | 0/2 | Not started | - |
 | 5. Security & Polish | 0/2 | Not started | - |

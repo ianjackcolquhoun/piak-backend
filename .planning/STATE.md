@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-10)
 ## Current Position
 
 Phase: 3 of 5 (Contact Extraction)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-01-12 — Completed 02-01-PLAN.md (Phase 2 complete)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-12 — Completed 03-01-PLAN.md
 
-Progress: ███░░░░░░░ 33%
+Progress: ████░░░░░░ 44%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
+- Total plans completed: 4
 - Average duration: 4 min
-- Total execution time: 0.18 hours
+- Total execution time: 0.22 hours
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: ███░░░░░░░ 33%
 |-------|-------|-------|----------|
 | 1. Foundation | 2 | 9 min | 5 min |
 | 2. Intent Classification | 1 | 2 min | 2 min |
+| 3. Contact Extraction | 1 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (8 min), 01-02 (1 min), 02-01 (2 min)
+- Last 5 plans: 01-01 (8 min), 01-02 (1 min), 02-01 (2 min), 03-01 (2 min)
 - Trend: —
 
 ## Accumulated Context
@@ -50,6 +51,7 @@ Recent decisions affecting current work:
 - 02-01: 256 maxTokens for classification (short responses)
 - 02-01: Default to add for new info, search for questions
 - 02-01: System prompts in prompts/ directory
+- 03-01: 512 maxTokens for extraction (longer responses than classification)
 
 ### Deferred Issues
 
@@ -62,5 +64,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-12
-Stopped at: Completed 02-01-PLAN.md (Phase 2 complete)
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
