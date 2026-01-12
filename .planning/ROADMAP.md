@@ -15,7 +15,7 @@ None
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Foundation** - Claude API service and contact data model
-- [ ] **Phase 2: Intent Classification** - Route user input to add/update/search
+- [x] **Phase 2: Intent Classification** - Route user input to add/update/search
 - [ ] **Phase 3: Contact Extraction** - Parse natural language to structured data
 - [ ] **Phase 4: Contact Operations** - Update and search functions
 - [ ] **Phase 5: Security & Polish** - Firestore rules and prompt refinement
@@ -40,7 +40,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: Intent classification function and routing logic
+- [x] 02-01: Intent classification function and routing logic
 
 ### Phase 3: Contact Extraction
 **Goal**: Parse natural language notes into structured contact data (the core AI feature)
@@ -80,7 +80,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/2 | Complete | 2026-01-11 |
-| 2. Intent Classification | 0/1 | Not started | - |
+| 2. Intent Classification | 1/1 | Complete | 2026-01-12 |
 | 3. Contact Extraction | 0/2 | Not started | - |
 | 4. Contact Operations | 0/2 | Not started | - |
 | 5. Security & Polish | 0/2 | Not started | - |
