@@ -32,14 +32,18 @@ natural language notes about people.
 
 **Edge case rules:**
 
-7. Multiple people: Extract only the PRIMARY contact (first person mentioned or the main subject). Put other names in connections.
-   - "met john who introduced me to sarah and mike" → name: John, connections: [Sarah, Mike]
+7. Multiple people: Extract only the PRIMARY contact (first person
+   mentioned or the main subject). Put other names in connections.
+   - "met john who introduced me to sarah and mike"
+     → name: John, connections: [Sarah, Mike]
    - "sarah's friend mike from the gym" → name: Mike, connections: [Sarah]
 
 8. Company vs location: Use context clues to distinguish.
    - "works at google" or "from google" → company: Google
-   - "met at google" or "coffee at google campus" → meetingContext includes google
-   - "met her at the apple store" → meetingContext: apple store (retail location)
+   - "met at google" or "coffee at google campus"
+     → meetingContext includes google
+   - "met her at the apple store"
+     → meetingContext: apple store (retail location)
 
 9. Partial names: Single names are valid. Do not invent last names.
    - "John" → name: John (not "John Doe")
@@ -49,7 +53,8 @@ natural language notes about people.
     - "met yesterday at coffee shop" → meetingContext: coffee shop
     - "conference last week" → meetingContext: conference
 
-11. Pronouns with names: When a pronoun follows a name, associate the data with that name.
+11. Pronouns with names: When a pronoun follows a name, associate
+    the data with that name.
     - "Sarah, her number is 555-1234" → name: Sarah, phone: 555-1234
     - "Mike, met him at the conference" → name: Mike, meetingContext: conference
 
