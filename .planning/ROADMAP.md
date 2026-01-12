@@ -18,7 +18,7 @@ None
 - [x] **Phase 2: Intent Classification** - Route user input to add/update/search
 - [x] **Phase 3: Contact Extraction** - Parse natural language to structured data
 - [x] **Phase 4: Contact Operations** - Update and search functions
-- [ ] **Phase 5: Security & Polish** - Firestore rules and prompt refinement
+- [ ] **Phase 5: Security & Polish** (In progress) - Firestore rules and prompt refinement
 
 ## Phase Details
 
@@ -68,7 +68,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 05-01: Firestore security rules (user data isolation)
+- [x] 05-01: Firestore security rules (user data isolation)
 - [ ] 05-02: System prompt iteration for edge cases
 
 ## Progress
@@ -82,4 +82,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Intent Classification | 1/1 | Complete | 2026-01-12 |
 | 3. Contact Extraction | 1/1 | Complete | 2026-01-12 |
 | 4. Contact Operations | 2/2 | Complete | 2026-01-12 |
-| 5. Security & Polish | 0/2 | Not started | - |
+| 5. Security & Polish | 1/2 | In progress | - |
