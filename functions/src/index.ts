@@ -10,14 +10,21 @@
 import {setGlobalOptions} from "firebase-functions";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {defineSecret} from "firebase-functions/params";
+import * as admin from "firebase-admin";
 import {ClaudeService} from "./services/claude";
 import {INTENT_CLASSIFICATION_PROMPT} from "./prompts/intentClassification";
 import {CONTACT_EXTRACTION_PROMPT} from "./prompts/contactExtraction";
 import {
   ClassifyIntentResponse,
   ExtractContactResponse,
+  UpdateContactResponse,
   ContactData,
+  Contact,
 } from "./types";
+
+// Initialize Firebase Admin
+admin.initializeApp();
+const db = admin.firestore();
 
 const anthropicApiKey = defineSecret("ANTHROPIC_API_KEY");
 
@@ -196,5 +203,112 @@ export const extractContact = onCall(
       console.error("Claude API error:", error);
       throw new HttpsError("internal", "Extraction failed");
     }
+  }
+);
+
+/**
+ * Updates an existing contact with optional re-extraction and manual overrides.
+ * Re-extracts data when rawNote changes, then applies manual overrides on top.
+ */
+export const updateContact = onCall(
+  {
+    secrets: [anthropicApiKey],
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request): Promise<UpdateContactResponse> => {
+    // Require authentication
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Must be authenticated");
+    }
+
+    // Validate input
+    const {id, rawNote, overrides} = request.data || {};
+    if (!id || typeof id !== "string") {
+      throw new HttpsError("invalid-argument", "Contact ID is required");
+    }
+    if (rawNote !== undefined && typeof rawNote !== "string") {
+      throw new HttpsError("invalid-argument", "rawNote must be a string");
+    }
+    if (overrides !== undefined && typeof overrides !== "object") {
+      throw new HttpsError("invalid-argument", "overrides must be an object");
+    }
+
+    // Get existing contact
+    const contactRef = db.collection("contacts").doc(id);
+    const contactDoc = await contactRef.get();
+
+    if (!contactDoc.exists) {
+      throw new HttpsError("not-found", "Contact not found");
+    }
+
+    const existingContact = contactDoc.data() as Omit<Contact, "id">;
+
+    // Verify ownership
+    if (existingContact.userId !== request.auth.uid) {
+      throw new HttpsError("permission-denied", "Not authorized to update");
+    }
+
+    let reExtracted = false;
+    let extractedData: ContactData = {...existingContact.extracted};
+    let usage: {inputTokens: number; outputTokens: number} | undefined;
+
+    // Re-extract if rawNote changed
+    if (rawNote && rawNote !== existingContact.rawNote) {
+      const claude = new ClaudeService(anthropicApiKey.value());
+
+      try {
+        const response = await claude.complete(
+          CONTACT_EXTRACTION_PROMPT,
+          rawNote,
+          512
+        );
+
+        try {
+          extractedData = JSON.parse(response.text) as ContactData;
+          reExtracted = true;
+          usage = {
+            inputTokens: response.inputTokens,
+            outputTokens: response.outputTokens,
+          };
+        } catch (parseError) {
+          console.error("JSON parse error:", response.text);
+          throw new HttpsError("internal", "Invalid response format");
+        }
+      } catch (error) {
+        if (error instanceof HttpsError) {
+          throw error;
+        }
+        console.error("Claude API error:", error);
+        throw new HttpsError("internal", "Re-extraction failed");
+      }
+    }
+
+    // Apply manual overrides on top of extracted data
+    if (overrides) {
+      extractedData = {...extractedData, ...overrides};
+    }
+
+    // Build updated contact
+    const updatedContact: Omit<Contact, "id"> = {
+      ...existingContact,
+      rawNote: rawNote || existingContact.rawNote,
+      extracted: extractedData,
+      updatedAt: new Date(),
+    };
+
+    // Save to Firestore
+    await contactRef.update(updatedContact);
+
+    const result: UpdateContactResponse = {
+      contact: {id, ...updatedContact},
+      reExtracted,
+    };
+
+    if (usage) {
+      result.usage = usage;
+    }
+
+    return result;
   }
 );
