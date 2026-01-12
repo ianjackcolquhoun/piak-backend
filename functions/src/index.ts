@@ -8,6 +8,11 @@
  */
 
 import {setGlobalOptions} from "firebase-functions";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {defineSecret} from "firebase-functions/params";
+import {ClaudeService} from "./services/claude";
+
+const anthropicApiKey = defineSecret("ANTHROPIC_API_KEY");
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -22,9 +27,49 @@ import {setGlobalOptions} from "firebase-functions";
 // functions should each use functions.runWith({ maxInstances: 10 }) instead.
 // In the v1 API, each function can only serve one request per container, so
 // this will be the maximum concurrent request count.
-setGlobalOptions({ maxInstances: 10 });
+setGlobalOptions({maxInstances: 10});
 
 // export const helloWorld = onRequest((request, response) => {
 //   logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
+
+/**
+ * Test function to verify Claude API integration.
+ * Temporary function for verification - can be removed after testing.
+ */
+export const testClaude = onCall(
+  {
+    secrets: [anthropicApiKey],
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request) => {
+    // Require authentication
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Must be authenticated");
+    }
+
+    const claude = new ClaudeService(anthropicApiKey.value());
+
+    try {
+      const response = await claude.complete(
+        "You are a helpful assistant. Respond briefly.",
+        "Say hello and confirm you are Claude Haiku 4.5."
+      );
+
+      return {
+        success: true,
+        response: response.text,
+        usage: {
+          inputTokens: response.inputTokens,
+          outputTokens: response.outputTokens,
+        },
+      };
+    } catch (error) {
+      // Log for debugging
+      console.error("Claude API error:", error);
+      throw new HttpsError("internal", "Claude API call failed");
+    }
+  }
+);
