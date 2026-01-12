@@ -37,7 +37,7 @@ Query: "who works in finance"
 Contacts: [{"id":"1","name":"John","company":"Fifth Third Bank"},
            {"id":"2","name":"Sarah","company":"Acme Corp"}]
 Response:
-[{"id":"1","score":0.9,"reason":"Works at Fifth Third Bank (financial institution)"}]
+[{"id":"1","score":0.9,"reason":"Works at Fifth Third Bank (finance)"}]
 
 Query: "coffee"
 Contacts: [{"id":"1","rawNote":"met at starbucks","name":"Mike"},
