@@ -14,10 +14,13 @@ import * as admin from "firebase-admin";
 import {ClaudeService} from "./services/claude";
 import {INTENT_CLASSIFICATION_PROMPT} from "./prompts/intentClassification";
 import {CONTACT_EXTRACTION_PROMPT} from "./prompts/contactExtraction";
+import {CONTACT_SEARCH_PROMPT} from "./prompts/contactSearch";
 import {
   ClassifyIntentResponse,
   ExtractContactResponse,
   UpdateContactResponse,
+  SearchContactResponse,
+  SearchMatch,
   ContactData,
   Contact,
 } from "./types";
@@ -310,5 +313,93 @@ export const updateContact = onCall(
     }
 
     return result;
+  }
+);
+
+/**
+ * Searches contacts using AI-powered fuzzy matching.
+ * Finds contacts by any remembered fragment against all fields.
+ */
+export const searchContacts = onCall(
+  {
+    secrets: [anthropicApiKey],
+    timeoutSeconds: 60,
+    memory: "256MiB",
+  },
+  async (request): Promise<SearchContactResponse> => {
+    // Require authentication
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Must be authenticated");
+    }
+
+    // Validate input
+    const query = request.data?.query;
+    if (!query || typeof query !== "string") {
+      throw new HttpsError("invalid-argument", "Query is required");
+    }
+
+    // Fetch user's contacts
+    const contactsSnapshot = await db
+      .collection("contacts")
+      .where("userId", "==", request.auth.uid)
+      .get();
+
+    // Return empty results if no contacts
+    if (contactsSnapshot.empty) {
+      return {
+        results: [],
+        usage: {inputTokens: 0, outputTokens: 0},
+      };
+    }
+
+    // Format contacts for prompt
+    const contacts = contactsSnapshot.docs.map((doc) => {
+      const data = doc.data() as Omit<Contact, "id">;
+      return {
+        id: doc.id,
+        rawNote: data.rawNote,
+        ...data.extracted,
+      };
+    });
+
+    const claude = new ClaudeService(anthropicApiKey.value());
+
+    try {
+      const input = JSON.stringify({query, contacts});
+      const response = await claude.complete(
+        CONTACT_SEARCH_PROMPT,
+        input,
+        512 // Search results can be longer than classification
+      );
+
+      // Parse JSON response
+      try {
+        const results = JSON.parse(response.text) as SearchMatch[];
+
+        // Validate response is an array
+        if (!Array.isArray(results)) {
+          console.error("Invalid response - not an array:", response.text);
+          throw new HttpsError("internal", "Invalid response format");
+        }
+
+        return {
+          results,
+          usage: {
+            inputTokens: response.inputTokens,
+            outputTokens: response.outputTokens,
+          },
+        };
+      } catch (parseError) {
+        console.error("JSON parse error:", response.text);
+        throw new HttpsError("internal", "Invalid response format");
+      }
+    } catch (error) {
+      // Re-throw HttpsErrors
+      if (error instanceof HttpsError) {
+        throw error;
+      }
+      console.error("Claude API error:", error);
+      throw new HttpsError("internal", "Search failed");
+    }
   }
 );
